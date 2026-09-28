@@ -3,39 +3,42 @@
 <head>
   <title>Opening Blinkit...</title>
   <script>
-    var productId = "757905";
-    var blinkitUrl = "https://blinkit.com/prn/x/prid/" + productId;
+    var productUrl = "https://blinkit.com/prn/x/prid/757905";
     var appOpened = false;
     
-    // Detect if page goes hidden (means app opened)
     document.addEventListener('visibilitychange', function() {
       if (document.hidden) {
         appOpened = true;
       }
     });
     
-    function openBlinkit() {
+    function openInApp() {
       var ua = navigator.userAgent.toLowerCase();
       var isAndroid = /android/.test(ua);
-      var isiOS = /iphone|ipad|ipod/.test(ua);
+      var isInstagram = /instagram|fbav/.test(ua);
       
-      if (isAndroid || isiOS) {
-        // Try to open app using deep link
-        window.location = "blinkit://prn/x/prid/" + productId;
+      if (isAndroid) {
+        if (isInstagram) {
+          // Force app open using Intent (breaks out of Instagram WebView)
+          window.location = "intent://blinkit.com/prn/x/prid/757905#Intent;scheme=https;package=com.grofers.customerapp;end;";
+        } else {
+          // Regular redirect for other browsers
+          window.location = productUrl;
+        }
         
-        // If app didn't open, go to website after 1.5 seconds
+        // Fallback after 2 seconds
         setTimeout(function() {
           if (!appOpened) {
-            window.location = blinkitUrl;
+            window.location = productUrl;
           }
-        }, 1500);
+        }, 2000);
       } else {
-        // Desktop - go straight to website
-        window.location = blinkitUrl;
+        // iOS/Desktop
+        window.location = productUrl;
       }
     }
     
-    openBlinkit();
+    openInApp();
   </script>
 </head>
 <body>
